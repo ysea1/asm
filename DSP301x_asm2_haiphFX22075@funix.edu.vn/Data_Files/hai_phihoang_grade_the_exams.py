@@ -24,8 +24,8 @@ def task_1():
 		print("Bạn không có quyền truy cập file này")
 	except Exception as e:
 		print("Có lỗi không xác định xảy ra: {0}".format(e))
-	else:
-		return content
+	#else:
+	#	return content
 		
 	return None
 		
@@ -73,15 +73,42 @@ def count_invalid_data(file):
 		Trả về tổng số dòng không hợp lệ của file
 	'''
 	
-	line_count = 0
+	# line_invalid_count : Tổng số dòng không hợp lệ
+	line_invalid_count = 0
+	
+	# is_set_invalid : Biến mục đích dùng xác định khi lệnh kiểm tra 1 đã xác định dòng không hợp lệ, thì ở lệnh kiểm tra 2 không tăng thêm giá trị tổng số dòng không hợp lệ nữa
+	is_set_invalid = False
 	
 	if file is None :
 		return 0
+		
+	# Đọc dữ liệu từng dòng trong file
+	# Kiểm tra điều kiện hợp lệ :
+	#	Một dòng hợp lệ chứa danh sách 26 giá trị được phân tách bằng dấu phẩy
+	#	N# cho một học sinh là mục đầu tiên trên dòng. Nó phải chứa ký tự “N” theo sau là 8 ký tự số.
+	for line in file:
+		if line.strip():
+			items = line.split(',')
+			if len(items) <> 26 :
+				print('Invalid line of data: does not contain exactly 26 values: {0}'.format(line))
+				if not is_set_invalid :
+					line_invalid_count += 1
+					is_set_invalid = True
+			
+			pattern = 'N[0-9]{8,8}'
+			if not re.match(pattern, items[0]):
+				print('Invalid line of data: N# is invalid : {0}'.format(items[0]))
+				if not is_set_invalid :
+					line_invalid_count += 1
+					is_set_invalid = True
+					
+	
+	return line_invalid_count
 		
 # end def count_invalid_data(file)
 	
 
 
 def task_3():
-
+	
 # end def task_3()
