@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 import re
+import os
 
 
 
@@ -11,24 +12,31 @@ def task_1():
 	1.2. Viết một chương trình cho phép người dùng nhập tên của một tệp và truy cập đọc.
 	1.3. Nếu tệp tồn tại, bạn có thể in ra một thông báo xác nhận. Nếu tệp không tồn tại, bạn nên cho người dùng biết rằng không thể tìm thấy tệp và nhắc lại họ
 	'''
+		
+	filename = input('Enter a filename or exit: ')
 	
-	filename = input('Enter a filename: ')
+	# Nếu người dùng nhập exit thì thoát khỏi ứng dụng
+	if filename.lower() == 'exit':
+		return 'exit'
+		
+	current_dir = os.path.dirname(os.path.abspath(__file__))	
+	filepath = format('{0}\{1}.txt'.format(current_dir, filename))
+	print(filepath)
 
 	try:
-		with open(filename, "r") as file:
-			print('Mở file thành công')
-			return file
+		with open(filepath, "r") as file:
+			print('Successfully opened {0}'.format(filename))
+			task_2(file)
 	except FileNotFoundError:
-		print("Xin lỗi, tôi không thể tìm thấy file {0}".format(filename))
+		print("File cannot be found. {0}".format(filename))
 	except PermissionError:
-		print("Bạn không có quyền truy cập file này")
+		print("File don't have permission")
 	except Exception as e:
-		print("Có lỗi không xác định xảy ra: {0}".format(e))
-	#else:
-	#	return content
-		
-	return None
-		
+		print("It has error: {0}".format(e))
+	else:
+		file.close()
+		return 'continue'
+					
 # end def task_1()
 
 
@@ -43,10 +51,17 @@ def task_2(file):
 		Báo lỗi dòng dữ liệu không hợp lệ
 	'''
 	
+	print('**** ANALYZING ****')
+	line_invalid_count = count_invalid_data(file)
+	
+	print('**** REPORT ****')
+	
 	line_count = count_line_file(file)
 	print('Total valid lines of data: {0}'.format(line_count))
+	print('Total invalid lines of data: {0}'.format(line_invalid_count))
 	
 	
+	return line_count, line_invalid_count
 
 # end def task_2()
 
@@ -56,14 +71,12 @@ def count_line_file(file):
 		Trả về tổng số dòng của file
 	'''
 	
+	print('count_line_file : {0}'.format(file.readlines()))
 	line_count = 0
-	
-	if file is None :
-		return 0
 		
-	for line in file:
-		if line.strip():
-			line_count += 1
+	for line in file:		
+		line_count += 1
+		print('line : {0}'.format(line_count))
 
 	return line_count
 # end def count_line_file(file):
@@ -89,7 +102,7 @@ def count_invalid_data(file):
 	for line in file:
 		if line.strip():
 			items = line.split(',')
-			if len(items) <> 26 :
+			if len(items) != 26 :
 				print('Invalid line of data: does not contain exactly 26 values: {0}'.format(line))
 				if not is_set_invalid :
 					line_invalid_count += 1
@@ -102,13 +115,17 @@ def count_invalid_data(file):
 					line_invalid_count += 1
 					is_set_invalid = True
 					
-	
+	if line_invalid_count == 0:
+		print('No errors found!')
+		
 	return line_invalid_count
 		
 # end def count_invalid_data(file)
 	
 
 
-def task_3():
+while True :
+	action = task_1()
 	
-# end def task_3()
+	if action == 'exit':
+		break
