@@ -62,6 +62,8 @@ def task_2(file):
 	avg_score = 0
 	range_score = 0
 	
+	arr_answer = np.array([]) # Biến lưu mảng các câu trả lời các sinh viên
+	
 	for line in file:
 		if line.strip():
 			line_count += 1
@@ -71,7 +73,17 @@ def task_2(file):
 			if is_invalid_data(line):
 				line_invalid_count += 1
 			else:
-				dict_student_score.append(task_3(line, list_answer_key))
+				list_answer = line.strip()
+				student_id, score = task_3(list_answer, list_answer_key)
+				dict_student_score[student_id] = score
+				
+				list_answer = list_answer.replace('A','1')
+				list_answer = list_answer.replace('B','2')
+				list_answer = list_answer.replace('C','3')
+				list_answer = list_answer.replace('D','4')
+				list_answer = list_answer.replace(',,',',0,')
+				
+				arr_answer = np.append(arr_answer, list_answer)
 	# end for line in file:	
 	
 	min_score = min(dict_student_score.values())
@@ -82,6 +94,26 @@ def task_2(file):
 	for item in dict_student_score :
 		if dict_student_score[item] >= 80:
 			count_student_high_score += 1
+			
+	print(arr_answer)
+	
+	# Tính số phần tử khác 0 trong mỗi cột của mảng
+	count_nonzero = np.count_nonzero(arr_answer, axis=1)
+
+	# Tìm chỉ mục của cột có số phần tử khác 0 nhỏ nhất
+	min_index = np.argmin(count_nonzero)
+
+	# In kết quả
+	print("Cột có nhiều giá trị 0 nhất là cột số:", min_index)
+			
+	# Xác định câu hỏi bị bỏ qua nhiều nhất
+	# Giải thuật :
+	#		Duyệt từng dòng, xác định vị trí cột có giá trị rỗng nhiều nhất
+	#
+	#file.seek(0)
+	#content = file.readlines()
+	#np_array = np.array(content)
+	#print(np_array)
 	
 	print('**** ANALYZING ****')	
 	if line_invalid_count == 0:
@@ -146,8 +178,8 @@ def task_3(line, list_answer_key):
 	#list_answer_key = answer_key.split(',')
 	
 	score = 0
-	list_answer_student = line.split(',')
-	for i in range(0, 26):
+	list_answer_student = line.split(',')		
+	for i in range(0, 25):
 		if len(list_answer_student[i+1]) > 0 :
 			if list_answer_student[i+1] == list_answer_key[i] :
 				score += 4
@@ -156,7 +188,7 @@ def task_3(line, list_answer_key):
 	
 	#end for i in range(0, 26)	
 	
-	return {list_answer_student[0], score}
+	return list_answer_student[0], score
 	
 # end def task_3()
 
