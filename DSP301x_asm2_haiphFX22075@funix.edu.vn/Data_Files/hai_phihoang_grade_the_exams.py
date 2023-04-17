@@ -62,7 +62,8 @@ def task_2(file):
 	avg_score = 0
 	range_score = 0
 	
-	arr_answer = np.array([]) # Biến lưu mảng các câu trả lời các sinh viên
+	#arr_answer = np.array([]) # Biến lưu mảng các câu trả lời các sinh viên
+	arr_answer = [] # Biến lưu mảng các câu trả lời các sinh viên
 	
 	for line in file:
 		if line.strip():
@@ -73,17 +74,26 @@ def task_2(file):
 			if is_invalid_data(line):
 				line_invalid_count += 1
 			else:
-				list_answer = line.strip()
-				student_id, score = task_3(list_answer, list_answer_key)
+				str_answer = line.strip()				
+				student_id, score = task_3(str_answer, list_answer_key)
 				dict_student_score[student_id] = score
 				
-				list_answer = list_answer.replace('A','1')
-				list_answer = list_answer.replace('B','2')
-				list_answer = list_answer.replace('C','3')
-				list_answer = list_answer.replace('D','4')
-				list_answer = list_answer.replace(',,',',0,')
+				str_answer = str_answer.replace('A','1')
+				str_answer = str_answer.replace('B','2')
+				str_answer = str_answer.replace('C','3')
+				str_answer = str_answer.replace('D','4')
+				str_answer = str_answer.replace(',,',',0,')
+				str_answer = str_answer.replace(',,',',0,')
 				
-				arr_answer = np.append(arr_answer, list_answer)
+				# Nếu ký tự cuối cùng là dấu ',' thì có nghĩa câu cuối cùng học sinh không có đáp án => tự động thêm 0 vào cuối
+				if str_answer[len(str_answer)-1] == ',' :
+					str_answer += '0'
+				
+				pattern = 'N[0-9]{8,8},'
+				str_answer = re.sub(pattern, '999,', str_answer)	
+				list_answer = str_answer.split(',')
+				arr = np.array(list_answer)
+				arr_answer.append(arr)
 	# end for line in file:	
 	
 	min_score = min(dict_student_score.values())
@@ -96,15 +106,15 @@ def task_2(file):
 			count_student_high_score += 1
 			
 	print(arr_answer)
-	
+	arr_answer = arr_answer.astype(int)
 	# Tính số phần tử khác 0 trong mỗi cột của mảng
-	count_nonzero = np.count_nonzero(arr_answer, axis=1)
+	count_nonzero = np.count_nonzero(arr_answer == 0, axis=0)
 
 	# Tìm chỉ mục của cột có số phần tử khác 0 nhỏ nhất
-	min_index = np.argmin(count_nonzero)
+	#ssmin_index = np.argmin(count_nonzero)
 
 	# In kết quả
-	print("Cột có nhiều giá trị 0 nhất là cột số:", min_index)
+	print("Cột có nhiều giá trị 0 nhất là cột số:", count_nonzero)
 			
 	# Xác định câu hỏi bị bỏ qua nhiều nhất
 	# Giải thuật :
@@ -191,6 +201,18 @@ def task_3(line, list_answer_key):
 	return list_answer_student[0], score
 	
 # end def task_3()
+
+def task_3_7():
+	'''
+		Trả về danh sách các câu hỏi bị bỏ qua nhiều nhất :  số thứ tự câu hỏi - số lượng học sinh bỏ qua -  tỉ lệ bị bỏ qua
+		
+		Giải thuật :
+			Đưa các dòng trả lời hợp lệ vào numpy
+			Đối với các câu trả lời trắng thì thay bằng 0
+			Đếm tổng số lượng 0 của từng cột
+	'''
+
+# end def task_3_7()
 
 
 while True :
