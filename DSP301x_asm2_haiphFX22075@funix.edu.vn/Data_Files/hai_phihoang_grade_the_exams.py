@@ -157,7 +157,8 @@ def  get_content_to_pandas(file):
 		data_content_report = data_content_report + 'Highest score: {0}\n'.format(df['SCORE'].max())
 		data_content_report = data_content_report + 'Lowest  score: {0}\n'.format(df['SCORE'].min())
 		data_content_report = data_content_report + 'Range  score: {0}\n'.format(df['SCORE'].max() - df['SCORE'].min())
-		data_content_report = data_content_report + 'Median  score: {0}\n'.format(round(df['SCORE'].mean(),2))
+		data_content_report = data_content_report + 'Median  score: {0}\n'.format(round(df['SCORE'].median(),2))
+				
 				
 		# Câu hỏi không có câu trả lời (giá trị 0)
 		search_value_skip = 0 # giá trị cần tìm
