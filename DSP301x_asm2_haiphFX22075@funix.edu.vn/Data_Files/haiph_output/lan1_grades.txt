@@ -1,0 +1,49 @@
+Enter a class to grade: class1
+Successfully opened class1
+
+
+**** ANALYZING ****
+
+No errors found!
+
+
+**** REPORT ****
+
+Total valid lines of data: 20
+Total invalid lines of data: 0
+Total students of high scores: 6
+Mean (average) score: 75.6
+Highest score: 91
+Lowest  score: 59
+Range  score: 32
+Median  score: 75.6
+Question that most people skip: A3 - 4 - 0.2, A5 - 4 - 0.2, A23 - 4 - 0.2, 
+Question that most people answer incorrectly: A10 - 4 - 0.2, A14 - 4 - 0.2, A16 - 4 - 0.2, A19 - 4 - 0.2, A22 - 4 - 0.2, 
+
+
+>>> ================================ RESTART ================================
+>>>
+Enter a class to grade: class2
+Successfully opened class2
+
+
+**** ANALYZING ****
+
+Invalid line of data: does not contain exactly 26 values: N00000023,,A,D,D,C,B,D,A,C,C,,C,,B,A,C,B,D,A,C,A,A
+Invalid line of data: N# is invalid : N0000002
+Invalid line of data: N# is invalid : NA0000027
+Invalid line of data: does not contain exactly 26 values: N00000035,B,A,D,D,B,B,,A,C,,D,B,A,B,A,A,B,D,A,C,A,C,B,D,D,A,A
+
+
+**** REPORT ****
+
+Total valid lines of data: 21
+Total invalid lines of data: 4
+Total students of high scores: 7
+Mean (average) score: 78.0
+Highest score: 100
+Lowest  score: 66
+Range  score: 34
+Median  score: 78.0
+Question that most people skip: A22 - 6 - 0.29, 
+Question that most people answer incorrectly: A18 - 5 - 0.29, 

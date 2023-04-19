@@ -57,8 +57,9 @@ def task_1():
 
 def  get_content_to_pandas(file):
 	'''
-		Lấy các dòng dữ liệu hợp lệ và chuyển vào pandas
+		Đọc từng dong
 	'''
+	global file_out_put
 	global filename
 	global data_content_report
 	
@@ -109,10 +110,16 @@ def  get_content_to_pandas(file):
 														
 		# end for line in file:	
 		
-		# Đọc vào pandas
-		df = pd.read_csv(io.StringIO(data_student_score), header=None, names=['ID', 'A1', 'A2','A3','A4','A5', 'A6', 'A7','A8','A9','A10', 'A11', 'A12','A13','A14','A15','A16', 'A17','A18','A19','A20', 'A21', 'A22','A23','A24','A25','SCORE'])		
-		print('df : \n',df)
+		#Tạm thời replace hết 
 		
+		# Đọc vào pandas
+		df = pd.read_csv(io.StringIO(data_student_score), header=None, names=['ID', 'A1', 'A2','A3','A4','A5', 'A6', 'A7','A8','A9','A10', 'A11', 'A12','A13','A14','A15','A16', 'A17','A18','A19','A20', 'A21', 'A22','A23','A24','A25','SCORE'])				
+		
+		# Biến df_count chỉ lấy ra các cột trả lời của học sinh để xác định câu bị bỏ qua/trả lời sai nhiều nhất
+		df_count = df[['A1', 'A2','A3','A4','A5', 'A6', 'A7','A8','A9','A10', 'A11', 'A12','A13','A14','A15','A16', 'A17','A18','A19','A20', 'A21', 'A22','A23','A24','A25']]
+		
+		df_score = df[['ID','SCORE']]
+		#print('df_count:\n', df_count)
 		#df = pd.read_csv(pd.compat.StringIO(data_student_score), header=None, names=['ID', 'A1', 'A2','A3','A4','A5', 'A6', 'A7','A8','A9','A10', 'A11', 'A12','A13','A14','A15','A16', 'A17','A18','A19','A20', 'A21', 'A22','A23','A24','A25','SCORE'])
 																						
 	
@@ -134,53 +141,52 @@ def  get_content_to_pandas(file):
 		data_content_report = data_content_report + 'Total invalid lines of data: {0}\n'.format(line_invalid_count)
 		
 		data_content_report = data_content_report + 'Total students of high scores: {0}\n'.format(df['SCORE'][df['SCORE'] >= 80].count())
-		data_content_report = data_content_report + 'Mean (average) score: {0}\n'.format(df['SCORE'].mean())
+		data_content_report = data_content_report + 'Mean (average) score: {0}\n'.format(round(df['SCORE'].mean(),2))
 		data_content_report = data_content_report + 'Highest score: {0}\n'.format(df['SCORE'].max())
 		data_content_report = data_content_report + 'Lowest  score: {0}\n'.format(df['SCORE'].min())
 		data_content_report = data_content_report + 'Range  score: {0}\n'.format(df['SCORE'].max() - df['SCORE'].min())
-		data_content_report = data_content_report + 'Median  score: {0}\n'.format(df['SCORE'].mean())
+		data_content_report = data_content_report + 'Median  score: {0}\n'.format(round(df['SCORE'].mean(),2))
 				
 		# Câu hỏi không có câu trả lời (giá trị 0)
-		search_value_skip = '0' # giá trị cần tìm
+		search_value_skip = 0 # giá trị cần tìm
 		
 		# Lấy tổng số các câu hỏi không có câu trả lời
-		counts_skip = (df.iloc[:,1:] == search_value_skip).sum() # List các cột và số lượng giá trị == search_value		
-		print('counts[A3] : ', counts_skip['A3'])
-		
-		
+		counts_skip = (df_count == search_value_skip).sum() # List các cột và số lượng giá trị == search_value		
+		#print('counts_skip : ', counts_skip)
+				
 		# Step 3: Lấy cột có số lần xuất hiện nhiều nhất
 		top_cols_skip = counts_skip.nlargest(1).index.tolist()
-		print('top_cols_skip : ', top_cols_skip)
+		#print('top_cols_skip : ', top_cols_skip)
 		#print('counts_skip[top_cols_skip[-1]] : ',counts_skip[top_cols_skip[-1]])	
 		
 		# Step 4: Duyệt từng cột, lấy tất cả các cột mà có số lần xuất hiện bằng top_cols_skip
 		data_question_skip = ''
 		rate_question_skip = round((counts_skip[top_cols_skip[-1]])/line_count,2)	
-		for col in df.columns:
+		for col in df_count.columns:
 			#if (col not in top_cols_skip) and (counts[col] == counts_skip[top_cols_skip[-1]]):
 			if (counts_skip[col] == counts_skip[top_cols_skip[-1]]):
-				if search_value_skip in df[col].tolist():
-					print('col : {0}'.format(col))
+				if search_value_skip in df_count[col].tolist():
+					#print('col : {0}'.format(col))
 					data_question_skip += '{0} - {1} - {2}, '.format(col, counts_skip[top_cols_skip[-1]], rate_question_skip)				
 		
 		data_content_report = data_content_report + 'Question that most people skip: {0}\n'.format(data_question_skip)
 		
 		
 		# Lấy câu hỏi mà nhiều học sinh trả lời sai nhất
-		search_value_incorrect = '-1'
-		counts_incorrect = (df.iloc[:,1:] == search_value_incorrect).sum() # List các cột và số lượng giá trị == search_value		
-		#counts_incorrect = df.iloc[:, 1:].apply(lambda x: x.value_counts()[search_value_incorrect])
+		search_value_incorrect = -1
+		counts_incorrect = (df_count == search_value_incorrect).sum() # List các cột và số lượng giá trị == search_value		
+		#print('counts_incorrect : ', counts_incorrect)
 		
 		top_cols_incorrect = counts_incorrect.nlargest(1).index.tolist()
-		print('top_cols_incorrect : ', top_cols_incorrect)
-		print('counts_incorrect[top_cols_incorrect[-1]] : ',counts_incorrect[top_cols_incorrect[-1]])	
+		#print('top_cols_incorrect : ', top_cols_incorrect)
+		
 		#print('top_conls_incorrect : {0} - counts_incorrect[top_cols_incorrect[-1]] : {1}'.format(top_cols_incorrect, counts_incorrect[top_cols_incorrect[-1]]))
 		data_question_incorrect = ''
 		rate_question_incorrect = round((counts_incorrect[top_cols_incorrect[-1]])/line_count,2)	
-		for col in df.columns:
+		for col in df_count.columns:
 			#if (col not in top_cols) and (counts[col] == counts[top_cols[-1]]):
 			if (counts_incorrect[col] == counts_incorrect[top_cols_incorrect[-1]]):
-				if search_value_incorrect in df[col].tolist():
+				if search_value_incorrect in df_count[col].tolist():
 					#print('col : {0}'.format(col))
 					data_question_incorrect += '{0} - {1} - {2}, '.format(col, counts_incorrect[top_cols_incorrect[-1]], rate_question_skip)	
 					
@@ -191,7 +197,11 @@ def  get_content_to_pandas(file):
 	
 	
 	#print('Finish : {0}'.format(data_content_report))
-	write_file(data_content_report)
+	write_file(data_content_report, file_out_put, 'a+')
+	
+	current_dir = os.path.dirname(os.path.abspath(__file__))	
+	file = '{0}\haiph_output\{1}_grades.txt'.format(current_dir, filename)
+	df_score.to_csv(file, sep=',', index=False)
 # end def  get_content_to_pandas(file)
 
 
@@ -280,14 +290,19 @@ def task_3_7():
 
 # end def task_3_7()
 
-def write_file(str_content):
+def write_file(str_content, filename, mode):
 	'''
-		Ghi nội dung file
+		str_content : Nội dung ghi ra file
+		filename : tên file
+		mode : Chế độ ghi
+			'w' : ghi file mới
+			'a+' : 
+		
 	'''
 	
-	global file_out_put
+	#global file_out_put
 	current_dir = os.path.dirname(os.path.abspath(__file__))	
-	file = '{0}\haiph_output\{1}_grades.txt'.format(current_dir, file_out_put)
+	file = '{0}\haiph_output\{1}_grades.txt'.format(current_dir, filename)
 		
 	try:		
 		with open(file, 'a+') as writefile:
