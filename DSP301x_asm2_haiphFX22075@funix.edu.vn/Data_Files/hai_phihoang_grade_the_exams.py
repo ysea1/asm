@@ -39,7 +39,7 @@ def task_1():
 		with open(filepath, "r") as file:
 			#print('Successfully opened {0}'.format(filename))
 			data_content_report = data_content_report + 'Successfully opened {0}\n'.format(filename)			
-			get_content_to_pandas(file)
+			data_content_report = data_content_report + get_content_to_pandas(file)
 	except FileNotFoundError:
 		#print("File cannot be found. {0}".format(filename))
 		data_content_report = data_content_report + 'File cannot be found. {0}\n'.format(filename)
@@ -51,7 +51,9 @@ def task_1():
 		data_content_report = data_content_report + "It has error: {0}\n".format(e)
 	else:
 		file.close()
-		return 'continue'
+		#return 'continue'
+		
+	print(data_content_report)
 					
 # end def task_1()
 
@@ -71,9 +73,9 @@ def  get_content_to_pandas(file):
 		- Ghi ra file điểm của từng thí sinh của từng lớp
 		
 	'''
-	global file_out_put
+	#global file_out_put
 	global filename
-	global data_content_report
+	data_content_report = ''
 	
 	line_count = 0 # Biến lưu tổng số dòng trong file
 	line_invalid_count = 0 # Biến lưu tổng số dòng không hợp lệ trong file
@@ -210,11 +212,13 @@ def  get_content_to_pandas(file):
 	
 	
 	#print('Finish : {0}'.format(data_content_report))
-	write_file(data_content_report, file_out_put, 'a+')
+	#write_file(data_content_report, file_out_put, 'a+')
 	
 	current_dir = os.path.dirname(os.path.abspath(__file__))	
 	file = '{0}\haiph_output\{1}_grades.txt'.format(current_dir, filename)
 	df_score.to_csv(file, sep=',', index=False)
+	
+	return data_content_report
 # end def  get_content_to_pandas(file)
 
 
@@ -323,7 +327,7 @@ def write_file(str_content, filename, mode):
 
 
 	
-file_out_put = input('Enter a filename out put: ')
+#file_out_put = input('Enter a filename : ')
 	
 while True :
 	action = task_1()
